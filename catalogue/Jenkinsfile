@@ -46,7 +46,8 @@ pipeline {
             steps {
                 sh """
                     sudo dnf install zip -y
-                    ls -la catalogue/       
+                    cd catalogue/
+                    ls -la       
                     pwd             
                     zip -q -r catalogue.zip ./* -x ".git" -x ".zip"
                     ls -ltr catalogue/
