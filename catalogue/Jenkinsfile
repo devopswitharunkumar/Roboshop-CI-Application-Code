@@ -56,7 +56,7 @@ pipeline {
     post {
         always {
             echo "Always runs whether pipeline success or failure"
-            cleanWs()        //or deleteDir()
+            deleteDir()
 
         }
         success {
