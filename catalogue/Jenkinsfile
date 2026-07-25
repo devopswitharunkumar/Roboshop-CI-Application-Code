@@ -5,7 +5,7 @@ pipeline {
         }
     }
     environment {
-        packageVersion
+        packageVersion = ''
     }
     options {
         ansiColor('xterm')
