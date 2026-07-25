@@ -57,6 +57,10 @@ pipeline {
         }
         stage('Publish Artifact') {
             steps {
+                sh """
+                    pwd
+                    cd catalogue/
+                """
                 nexusArtifactUploader(
                     nexusVersion: 'nexus3',
                     protocol: 'http',
