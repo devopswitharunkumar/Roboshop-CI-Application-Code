@@ -13,7 +13,7 @@ pipeline {
     }
     environment {
         packageVersion = ''
-        nexusURL = '172.31.27.178:8081'   //we gave Private ip but in project we use static ip 
+        nexusURL = '172.31.27.178:8081'   //we gave Private ip of nexus ec2 with port but in project we use static ip 
     }
     options {
         ansiColor('xterm')
@@ -78,11 +78,20 @@ pipeline {
                 )
             }
         }
+        stage ('Deploy') {
+            steps {
+                build job: "RoboShop-CD/catalogue-CD-deploy", wait: true,
+                parameters: [ 
+                    string(name: 'version', value: "${packageVersion}"),
+                    string(name: 'environment', value: "dev")
+                ]
+            }
+        }
     }
     post {
         always {
             echo "Always runs whether pipeline success or failure"
-            // deleteDir()
+            deleteDir()
 
         }
         success {
