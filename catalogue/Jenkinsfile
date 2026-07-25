@@ -42,10 +42,21 @@ pipeline {
                 """
             }
         }
+        stage('Build') {
+            steps {
+                sh """
+                    ls -la catalogue/
+                    zip -q -r ./* catalogue.zip -x ".git" -x ".zip"
+                    ls -ltr catalogue/
+                """
+            }
+        }
     }
     post {
         always {
             echo "Always runs whether pipeline success or failure"
+            cleanWs()        //or deleteDir()
+
         }
         success {
             echo "Pipeline is runned successfully "
