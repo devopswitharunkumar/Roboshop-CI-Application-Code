@@ -13,6 +13,7 @@ pipeline {
     }
     environment {
         packageVersion = ''
+        nexusURL = '172.31.38.117:8081'   //we gave Private ip but in project we use static ip 
     }
     options {
         ansiColor('xterm')
@@ -42,7 +43,7 @@ pipeline {
                 """
             }
         }
-        stage('Build') {
+        stage('Build package') {
             steps {
                 sh """
                     sudo dnf install zip -y
@@ -52,6 +53,25 @@ pipeline {
                     zip -q -r catalogue.zip ./* -x ".git" -x ".zip"
                     ls -ltr 
                 """
+            }
+        }
+        stage('Publish Artifact') {
+            steps {
+                nexusArtifactUploader(
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    nexusUrl: "${nexusURL}",
+                    groupId: 'com.roboshop',
+                    version: "${packageVersion}",
+                    repository: 'catalogue',
+                    credentialsId: 'CredentialsId',
+                    artifacts: [
+                        [artifactId: 'catalogue',
+                        classifier: '',
+                        file: 'catalogue' + '.zip',
+                        type: 'zip']
+                    ]
+                )
             }
         }
     }
