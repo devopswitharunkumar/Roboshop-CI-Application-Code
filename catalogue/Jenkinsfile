@@ -13,7 +13,7 @@ pipeline {
     }
     environment {
         packageVersion = ''
-        nexusURL = '172.31.38.117:8081'   //we gave Private ip but in project we use static ip 
+        nexusURL = '172.31.27.178:8081'   //we gave Private ip but in project we use static ip 
     }
     options {
         ansiColor('xterm')
