@@ -1,0 +1,29 @@
+pipeline {
+    agent {
+        node {
+            label 'Agent-1'
+        }
+    }
+    environment {
+        packageVersion
+    }
+    options {
+        ansiColor('xterm')
+        timeout(time:1, unit:'HOURS')
+        disableConcurrentBuilds()
+    }
+
+    stages {
+        stage('Get Version') {
+            steps {
+                def packageJSON = readJSON file: 'package.json'
+                packageVersion = packageJSON.version
+            }
+        }
+    }
+    post {
+        always {
+            echo "Always runs whether pipeline success or failure"
+        }
+    }
+}
