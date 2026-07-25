@@ -45,8 +45,9 @@ pipeline {
         stage('Build') {
             steps {
                 sh """
-                    ls -la catalogue/
                     sudo dnf install zip -y
+                    ls -la catalogue/       
+                    pwd             
                     zip -q -r catalogue.zip ./* -x ".git" -x ".zip"
                     ls -ltr catalogue/
                 """
