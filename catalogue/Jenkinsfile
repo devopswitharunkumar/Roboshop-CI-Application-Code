@@ -20,7 +20,9 @@ pipeline {
         timeout(time:1, unit:'HOURS')
         disableConcurrentBuilds()
     }
-
+    parameters {
+        booleanParam(name: 'Deploy', defaultValue: false, description: 'If Deploy Want Do  This ?')
+    }
     stages {
         stage('Get Version') {
             steps {
@@ -40,6 +42,20 @@ pipeline {
                     sudo dnf install nodejs -y
                     cd catalogue/
                     npm install  
+                """
+            }
+        }
+        stage('Unit Testing') {
+            steps {
+                sh """
+                    echo "unit test runs here"
+                """
+            }
+        }
+        stage('Sonar Scanning') {
+            steps {
+                sh """
+                    sonar-scanner 
                 """
             }
         }
@@ -79,6 +95,11 @@ pipeline {
             }
         }
         stage ('Deploy') {
+            when {
+                expression {
+                    params.Deploy == 'true'
+                }
+            }
             steps {
                 build job: "RoboShop-CD/catalogue-CD-deploy", wait: true,
                 parameters: [ 
