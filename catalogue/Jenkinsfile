@@ -101,11 +101,13 @@ pipeline {
                 }
             }
             steps {
-                def params = [
-                    string(name: 'version', value: "${packageVersion}"),
-                    string(name: 'environment', value: "dev")
-                ]
-                build job: "RoboShop-CD/catalogue-CD-deploy", wait: true, parameters: params
+                script {
+                    def params = [
+                        string(name: 'version', value: "${packageVersion}"),
+                        string(name: 'environment', value: "dev")
+                    ]
+                    build job: "RoboShop-CD/catalogue-CD-deploy", wait: true, parameters: params
+                }
             }
         }
     }
