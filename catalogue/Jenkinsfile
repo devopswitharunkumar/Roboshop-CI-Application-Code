@@ -97,16 +97,16 @@ pipeline {
         stage ('Deploy') {
             when {
                 expression {
-                    params.Deploy == 'true'
+                    params.Deploy 
                 }
             }
             steps {
                 script {
-                    def params = [
+                    def buildParams = [
                         string(name: 'version', value: "${packageVersion}"),
                         string(name: 'environment', value: "dev")
                     ]
-                    build job: "RoboShop-CD/catalogue-CD-deploy", wait: true, parameters: params
+                    build job: "RoboShop-CD/catalogue-CD-deploy", wait: true, parameters: buildParams 
                 }
             }
         }
