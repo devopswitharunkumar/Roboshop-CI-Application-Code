@@ -55,6 +55,8 @@ app.get('/products', (req, res) => {
     }
 });
 
+//new features added to catalogue application and updated the version 1.0.1
+
 // product by SKU
 app.get('/product/:sku', (req, res) => {
     if(mongoConnected) {
