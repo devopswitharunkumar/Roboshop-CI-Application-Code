@@ -55,6 +55,7 @@ pipeline {
         stage('Sonar Scan') {
             steps {
                 sh """
+                    cd catalogue/
                     sonar-scanner 
                 """
             }
