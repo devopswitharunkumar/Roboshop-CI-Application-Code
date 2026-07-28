@@ -5,6 +5,8 @@
 //do aws configure command not in root user do it in normal user in agent-1 where ever agent u do all this
 //then only pipeline will execute and one for one ec2/agent/jenins server
 
+
+//Before share library file 
 pipeline {
     agent {
         node {
@@ -31,6 +33,83 @@ pipeline {
                     def packageJSON = readJSON file: 'catalogue/package.json'
                     packageVersion = packageJSON.version
                     echo "Application version is : $packageVersion"
+                }
+            }
+        }
+        stage('Install Dependencies') {
+            steps {
+                sh """
+                    sudo dnf module disable nodejs -y
+                    sudo dnf module enable nodejs:18 -y
+                    sudo dnf install nodejs -y
+                    cd catalogue/
+                    npm install  
+                """
+            }
+        }
+        stage('Unit Testing') {
+            steps {
+                sh """
+                    echo "unit test runs here"
+                """
+            }
+        }
+        stage('Sonar Scan') {
+            steps {
+                sh """
+                    cd catalogue/
+                    sonar-scanner 
+                """
+            }
+        }
+        stage('Build package') {
+            steps {
+                sh """
+                    sudo dnf install zip -y
+                    cd catalogue/
+                    ls -la       
+                    pwd             
+                    zip -q -r catalogue.zip ./* -x ".git" -x ".zip"
+                    ls -ltr 
+                """
+            }
+        }
+        stage('Publish Artifact') {
+            steps {
+                sh """
+                    pwd
+                    cd catalogue/
+                """
+                nexusArtifactUploader(
+                    nexusVersion: 'nexus3',
+                    protocol: 'http',
+                    nexusUrl: "${nexusURL}",
+                    groupId: 'com.roboshop',
+                    version: "${packageVersion}",
+                    repository: 'catalogue',
+                    credentialsId: 'nexus-login-credentials',
+                    artifacts: [
+                        [artifactId: 'catalogue',
+                        classifier: '',
+                        file: 'catalogue/catalogue' + '.zip',
+                        type: 'zip']
+                    ]
+                )
+            }
+        }
+        stage ('Deploy') {
+            when {
+                expression {
+                    params.Deploy 
+                }
+            }
+            steps {
+                script {
+                    def buildParams = [
+                        string(name: 'version', value: "${packageVersion}"),
+                        string(name: 'environment', value: "dev")
+                    ]
+                    build job: "RoboShop-CD/catalogue-CD-deploy", wait: true, parameters: buildParams 
                 }
             }
         }
