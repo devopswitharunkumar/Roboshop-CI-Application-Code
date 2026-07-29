@@ -1,3 +1,17 @@
 #!groovy
 
-Library(roboshop-Jenkins-shared-libraries)
+@Library('roboshop-Jenkins-shared-libraries') _
+
+//respnsibility is to pass what type of application and component is this to pipeline 
+
+def configMap = [
+    application = nodejsVM,
+    component = catalogue
+]
+
+if ( ! env.BRANCH_NAME.equalsIgnoreCase('main')) {
+    pipelineDecision.decidePipeline(configMap)
+}
+else {
+    echo "This Is Production, Deal With CR Process"
+}
